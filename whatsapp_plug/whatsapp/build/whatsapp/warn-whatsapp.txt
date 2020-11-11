@@ -34,8 +34,6 @@ missing module named cElementTree - imported by xlrd.xlsx (delayed, conditional,
 missing module named defusedxml - imported by xlrd.xlsx (delayed, conditional, optional)
 missing module named cStringIO - imported by selenium.webdriver.firefox.firefox_profile (optional), xlrd.timemachine (conditional)
 missing module named copy_reg - imported by cStringIO (top-level)
-missing module named log - imported by D:\Project\for_sissie\whatsapp_plug\whatsapp\whatsapp.py (top-level), D:\Project\for_sissie\whatsapp_plug\whatsapp\read_file.py (top-level)
-missing module named read_file - imported by D:\Project\for_sissie\whatsapp_plug\whatsapp\whatsapp.py (top-level)
 missing module named urllib2 - imported by selenium.webdriver.common.utils (delayed, optional), selenium.webdriver.common.service (delayed, optional)
 missing module named urlparse - imported by selenium.webdriver.remote.remote_connection (optional)
 runtime module named urllib3.packages.six.moves - imported by http.client (top-level), urllib3.connectionpool (top-level), urllib3.util.response (top-level), 'urllib3.packages.six.moves.urllib' (top-level), urllib3.response (top-level), urllib3.util.queue (top-level)

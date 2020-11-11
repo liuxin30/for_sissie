@@ -3,8 +3,8 @@
 block_cipher = None
 
 
-a = Analysis(['whatsapp.py','read_file.py','log.py'],
-             pathex=['D:\\Project\\for_sissie\\whatsapp_plug'],
+a = Analysis(['whatsapp.py'],
+             pathex=['D:\\Project\\for_sissie\\whatsapp_plug\\whatsapp'],
              binaries=[],
              datas=[],
              hiddenimports=[],
