@@ -118,13 +118,11 @@ class WhatsAppPlug(object):
         :return:
         """
         LOG.info("search customer: %s" % mail_num)
-        search_filed = self.driver.find_element_by_xpath(
-            "//div[@id='side']/div/div/label/div/div[@class='_3FRCZ copyable-text selectable-text']")
+        search_filed = self.driver.find_element_by_css_selector('div.copyable-text.selectable-text')
         search_filed.clear()
         search_filed.send_keys(mail_num)
         time.sleep(2)
-        conversations = self.driver.find_elements_by_xpath(
-            '//*[@id="pane-side"]//div[@class="_210SC"]//span[@class="matched-text _3Whw5"]')
+        conversations = self.driver.find_element_by_css_selector('span.matched-text')
         for conversation in conversations:
             text = conversation.text
             if mail_num in text:
@@ -148,6 +146,7 @@ class WhatsAppPlug(object):
         for message in messages:
             message_filed.send_keys(message)
             message_filed.send_keys(Keys.SHIFT + Keys.ENTER)
+            time.sleep(0.5)
         message_filed.send_keys(Keys.RETURN)
         time.sleep(2)
         if image_list:
