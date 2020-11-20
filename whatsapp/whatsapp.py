@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
 import time
 import logging
 
@@ -12,6 +13,11 @@ from selenium.common.exceptions import TimeoutException
 import xlrd
 
 BASE_PATH = os.path.abspath(os.path.dirname(__file__))
+utils_path = os.path.join(BASE_PATH, "utils")
+sys.path.append(utils_path)
+from utils.wait import wait_until
+
+# log setting
 log_path = os.path.join(BASE_PATH, "whatsapp.log")
 log_format = "%(asctime)s %(levelname)s: %(message)s"
 logging.basicConfig(filename=log_path, level=logging.INFO, format=log_format)
@@ -40,6 +46,7 @@ class ElementHasTitle(object):
         locator - used to find the element
         returns the WebElement once it has the particular css class
     """
+
     def __init__(self, locator, title):
         self.locator = locator
         self.title = title
@@ -111,6 +118,16 @@ class WhatsAppPlug(object):
     def __init__(self, driver):
         self.driver = driver
 
+    def _is_text_exist(self, locator, text):
+        try:
+            element = self.driver.find_element(By.CSS_SELECTOR, locator)
+            if element.text == text:
+                return True
+            else:
+                return False
+        except Exception:
+            return False
+
     def search_customer(self, mail_num):
         """
         在搜索栏查找联系人
@@ -118,11 +135,12 @@ class WhatsAppPlug(object):
         :return:
         """
         LOG.info("search customer: %s" % mail_num)
-        search_filed = self.driver.find_element_by_css_selector('div.copyable-text.selectable-text')
+        search_filed = wait_until(
+            lambda x: self.driver.find_element(By.CSS_SELECTOR, 'div.copyable-text.selectable-text'))
         search_filed.clear()
         search_filed.send_keys(mail_num)
         time.sleep(2)
-        conversations = self.driver.find_element_by_css_selector('span.matched-text')
+        conversations = self.driver.find_elements_by_css_selector('span.matched-text')
         for conversation in conversations:
             text = conversation.text
             if mail_num in text:
@@ -182,6 +200,6 @@ if __name__ == '__main__':
             except Exception as e:
                 LOG.error(e)
                 fail_list.append(mail)
-        time.sleep(60*3)
+        time.sleep(60 * 3)
     if fail_list:
         LOG.error("fail_list: %s " % fail_list)
