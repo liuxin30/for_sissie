@@ -5,6 +5,7 @@ import time
 import logging
 import json
 import copy
+import re
 
 BASE_PATH = os.path.abspath(os.path.dirname(__file__))
 log_path = os.path.join(BASE_PATH, "instagram.log")
@@ -25,6 +26,18 @@ HEADERS = {
     'x-csrftoken': 'fiSmQaoHxI7xy6iD7jwwHnLjNzuJR9G9',
     'x-ig-app-id': '936619743392459',
     'x-requested-with': 'XMLHttpRequest',
+}
+HEADERSS = {
+    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+    'accept-encoding': 'gzip, deflate, br',
+    'accept-language': 'zh-CN,zh;q=0.9',
+    'cache-control': 'max-age=0',
+    'sec-fetch-dest': 'document',
+    'sec-fetch-mode': 'navigate',
+    'sec-fetch-site': 'same-origin',
+    'sec-fetch-user': '?1',
+    'upgrade-insecure-requests': '1',
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36',
 }
 
 # PROXIES = {
@@ -48,6 +61,8 @@ class Instagram(object):
     def __init__(self, cookie, csrftoken):
         self.headers = HEADERS
         self.headers.update({"cookie": cookie, "x-csrftoken": csrftoken})
+        self.get_followers_headers = HEADERSS
+        self.get_followers_headers.update({"cookie": cookie})
 
     def get_response(self, end_cursor=None):
         if not end_cursor:
@@ -77,21 +92,40 @@ class Instagram(object):
             for username in usernames:
                 f.write(username + '\n')
 
+    def get_followers(self, username):
+        url = "https://www.instagram.com/%s/" % username
+        response = requests.get(url, headers=self.get_followers_headers)
+        LOG.info("GET: %s, status_code: %s" % (url, response.status_code))
+        try:
+            ret = re.search(r'meta content="(.+) 位粉丝', response.text)
+            followers = ret.group(1)
+            if ',' in followers:
+                followers = followers.replace(',', '')
+            elif 'K' in followers:
+                followers = float(followers[:-1]) * 1000
+            elif 'M' in followers:
+                followers = float(followers[:-1]) * 1000 * 1000
+        except Exception as e:
+            followers = 0
+            LOG.exception(e)
+
+        return {"url": url, "followers": followers}
 
 if __name__ == '__main__':
-    cookies = 'ig_did=960D17BA-B42A-4EDF-AB6C-5E772A00823F; mid=X6VBrAALAAFw8kf5Xx7AXfqY2LSR; ig_nrcb=1; fbm_124024574287414=base_domain=.instagram.com; csrftoken=fiSmQaoHxI7xy6iD7jwwHnLjNzuJR9G9; ds_user_id=7876242157; sessionid=7876242157%3ALY2JycOFaM7PPl%3A17; shbid=17454; shbts=1605423496.7171667; rur=ATN; fbsr_124024574287414=wqNynky-Oy8F0SNBZLHJ8UVvqayCWs1SADCeLpEw-JE.eyJ1c2VyX2lkIjoiMTAwMDI2MzAyMzkwNDk3IiwiY29kZSI6IkFRQnRJM1VYOHJ3RUFXYXVIME1WU3V0b2JMamlleGVONTBvVVBvVWZEbUNNb1E4ekxfMVVBU045OC0xVXZlczJTeXZuQmZYM2dla1hKLUxEaXhBNTRMYXFZTFFzeVRqVkF6X0VIMk1jQmtQR3RzeUMxUGRaRkJJLVlRM1c2RWVOSVZGWUcyOTI1bnNLVHRUNmZZYV9SU1lWUTBqVDUtOUs2RUZ5bVN0b2lrUnpiaWIyN25zQ213VTA2T3hodERqVHlyVlRtSUNIeHEwVEh6NDJYNHdUU2wtdm8wbnZZdFFBOGZpMlc3VWlGTmlYUVVsN3pXaFFhRXk5amwxVWRyNzJpS3VlNGhkcTZjUDRENENMZHRTV25DMHhPNzZBMTY5NVc3SE82ZXFCaGxkMnpraUlsNW1taTR1U2ZrM0dTZWQ1VkQ4Iiwib2F1dGhfdG9rZW4iOiJFQUFCd3pMaXhuallCQUdRZEd4a0ZaQzhaQzQwTXU1SW15ekliaGpGcXlzRzJoUklaQVJwYlI2d3BaQkdqNGN0ZGI5RXc2Y1U3MmxXcnpMbFpDWkNDNHczTUtqMlpCd0R5MVg4N3VxaE1DVzl5SW4zSDVzS3RXeldKck9iMHFpWkFWbzZoQ1Fzem9oNmJpM3g1TWJaQlR4YlJLdkhkU25uUHZaQzVZV1lsa1lUOE41OFBON0JFYm1JZmtFIiwiYWxnb3JpdGhtIjoiSE1BQy1TSEEyNTYiLCJpc3N1ZWRfYXQiOjE2MDU0NDYzODF9; urlgen="{\"124.108.23.233\": 64271\054 \"45.136.3.9\": 48024}:1keHx2:3kb51R2x8taTZ6yvgd8HtXx-4rQ"'
-    csrftoken = "fiSmQaoHxI7xy6iD7jwwHnLjNzuJR9G9"
+    cookies = 'ig_did=964BAB54-7E02-4512-8390-C7F53D2873D5; mid=X7UsJAALAAG65F2nNRrXzdRWB4C6; ig_nrcb=1; csrftoken=itCw8LJ0zgOrcvi8iThSGxRYQdlVNi4U; ds_user_id=7876242157; sessionid=7876242157%3AlAtRuGnb6dhKjx%3A7; shbid=17454; shbts=1605708850.732832; rur=ATN; urlgen="{\"124.108.22.102\": 64271}:1kfOT2:i3wd8y-LcMkizQ5GAemfTKNmxF0"'
+    csrftoken = "itCw8LJ0zgOrcvi8iThSGxRYQdlVNi4U"
     cursor = "QVFENVlXc0RCTzhrVlFZS0l6QUlFYW9fZDFVNDlBb2RFd2xOWWprTEp3SGFwbXEwZ2gzU1EtanlTWkVZSFpuM3cydHFnN2JEdGdqN0JrNEZYNDZJR0ZWRA=="
     ins = Instagram(cookies, csrftoken)
+    ins.get_followers("silvio_luz")
 
-    for i in range(100):
-    # while cursor:
-        print("第%s次。。。" % i)
-        try:
-            res = ins.get_response(end_cursor=cursor)
-        except Exception as e:
-            LOG.exception(e)
-            res = ins.get_response(end_cursor=cursor)
-        cursor = ins.process_data(res)
-        LOG.info(cursor)
-        time.sleep(2)
+    # for i in range(100):
+    # # while cursor:
+    #     print("第%s次。。。" % i)
+    #     try:
+    #         res = ins.get_response(end_cursor=cursor)
+    #     except Exception as e:
+    #         LOG.exception(e)
+    #         res = ins.get_response(end_cursor=cursor)
+    #     cursor = ins.process_data(res)
+    #     LOG.info(cursor)
+    #     time.sleep(2)
