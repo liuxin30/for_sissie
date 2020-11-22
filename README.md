@@ -13,7 +13,7 @@
 3.1 查看谷歌浏览器版本
 
 ![image](https://github.com/liuxin30/for_sissie/blob/master/images/Snipaste_2020-11-08_17-11-07.png)
-![image](https://github.com/liuxin30/for_sissie/blob/master/images/images/Snipaste_2020-11-08_17-12-06.png)
+![image](https://github.com/liuxin30/for_sissie/blob/master/images/Snipaste_2020-11-08_17-12-06.png)
 
 在浏览器里输入http://chromedriver.storage.googleapis.com/index.html，根据上面查到的浏览器版本，下载相应的压缩包
 ![image](https://github.com/liuxin30/for_sissie/blob/master/images/Snipaste_2020-11-08_17-15-48.png)
