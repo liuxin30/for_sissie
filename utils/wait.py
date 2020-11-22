@@ -9,9 +9,6 @@ from selenium.common.exceptions import TimeoutException
 def wait_until(fn, timeout=10, message='', poll_frequency=1, exception=None):
     """Calls the method provided with the driver as an argument until the \
     return value is not False."""
-    screen = None
-    stacktrace = None
-
     end_time = time.time() + timeout
     while True:
         try:
@@ -23,10 +20,10 @@ def wait_until(fn, timeout=10, message='', poll_frequency=1, exception=None):
         if time.time() > end_time:
             break
         time.sleep(poll_frequency)
-    logging.error(u"过了%s秒,还没有等到期望的结果" % timeout)
+    logging.error("过了%s秒,还没有等到期望的结果" % timeout)
     if exception is None:
         if message == "":
-            message = u"过了%s秒,还没有等到期望的结果" % timeout
+            message = "过了%s秒,还没有等到期望的结果" % timeout
         exception = TimeoutException(message)
     else:
         exception = exception(message)
