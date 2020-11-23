@@ -136,10 +136,11 @@ def main():
             except Exception as e:
                 LOG.error(e)
                 fail_list.append((names[i], mail))
+        if fail_list:
+            LOG.error("fail_list: %s " % fail_list)
+            write_exist_excel(customer_info_path, fail_list, sheet_index=1, start_row=0)
         time.sleep(60 * 3)
-    if fail_list:
-        LOG.error("fail_list: %s " % fail_list)
-        write_exist_excel(customer_info_path, fail_list, sheet_index=1, start_row=0)
+    
 
 
 if __name__ == '__main__':
