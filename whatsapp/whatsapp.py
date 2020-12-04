@@ -47,7 +47,7 @@ class WhatsAppPlug(object):
     def _is_text_exist(self, locator, text):
         try:
             element = self.driver.find_element(By.CSS_SELECTOR, locator)
-            if text in element.text:
+            if text.lower() in element.text.lower():
                 return element
             else:
                 return False
@@ -69,9 +69,10 @@ class WhatsAppPlug(object):
             time.sleep(2)
 
             # 等待搜索结果加载完成，并点击，默认搜索结果只有一个
-            conversation = wait_until(
-                lambda: self._is_text_exist('div#side div[role="option"] span.matched-text', mail_num))
-            conversation.click()
+            wait_until(lambda: self._is_text_exist('div#side span.matched-text', mail_num))
+            class_name = self.driver.find_element(By.CSS_SELECTOR, 'div#side span.matched-text').get_attribute("class")
+            locator = '//div[@id="side"]//span[@class="%s"]/..' % class_name
+            self.driver.find_element(By.XPATH, locator).click()
 
             # 等待对话框页面加载完成
             wait_until(lambda: self._is_text_exist('div#main header span[dir="auto"]', mail_num))
@@ -94,7 +95,7 @@ class WhatsAppPlug(object):
             message_filed.send_keys(message)
             message_filed.send_keys(Keys.SHIFT + Keys.ENTER)
             time.sleep(0.5)
-        message_filed.send_keys(Keys.RETURN)
+        # message_filed.send_keys(Keys.RETURN)
         time.sleep(2)
 
         # 发送图片
@@ -112,7 +113,7 @@ class WhatsAppPlug(object):
                 time.sleep(3)
                 send_field = wait_until(
                     lambda: self.driver.find_element(By.CSS_SELECTOR, 'div#app span[data-icon="send"]'))
-                send_field.click()
+                # send_field.click()
                 time.sleep(3)
 
 
