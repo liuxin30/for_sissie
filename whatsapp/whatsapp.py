@@ -2,7 +2,6 @@
 import os
 import sys
 import time
-import logging
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -95,7 +94,7 @@ class WhatsAppPlug(object):
             message_filed.send_keys(message)
             message_filed.send_keys(Keys.SHIFT + Keys.ENTER)
             time.sleep(0.5)
-        # message_filed.send_keys(Keys.RETURN)
+        message_filed.send_keys(Keys.RETURN)
         time.sleep(2)
 
         # 发送图片
@@ -113,7 +112,7 @@ class WhatsAppPlug(object):
                 time.sleep(3)
                 send_field = wait_until(
                     lambda: self.driver.find_element(By.CSS_SELECTOR, 'div#app span[data-icon="send"]'))
-                # send_field.click()
+                send_field.click()
                 time.sleep(3)
 
 
@@ -141,7 +140,6 @@ def main():
             LOG.error("fail_list: %s " % fail_list)
             write_exist_excel(customer_info_path, fail_list, sheet_index=1, start_row=0)
         time.sleep(60 * 3)
-    
 
 
 if __name__ == '__main__':
