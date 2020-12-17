@@ -6,6 +6,12 @@ from selenium.webdriver.support import expected_conditions as ec
 
 class Driver(object):
     def __init__(self, url, executable_path=None, options=None, wait_locator=None):
+        """
+        :param url:
+        :param executable_path:
+        :param options:
+        :param wait_locator:
+        """
         self.url = url
         self.executable_path = executable_path
         self.options = options
